@@ -44,4 +44,9 @@ class UserService
         // Удаляем все токены пользователя
         return $user->tokens()->delete();
     }
+
+    public function findById(int $id): ?User
+    {
+        return $this->userRepository->findById($id);
+    }
 }

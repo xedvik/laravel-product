@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use App\DTO\Products\ProductAuthorizationDTO;
 class StoreProductRequest extends FormRequest
 {
     /**
@@ -11,7 +11,7 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user() && $this->user()->can('create', new ProductAuthorizationDTO());
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string',
+            'description' => 'nullable|string',
+            'purchase_price' => 'required|numeric|min:0',
+            'rent_price_per_hour' => 'required|numeric|min:0',
         ];
     }
 }
