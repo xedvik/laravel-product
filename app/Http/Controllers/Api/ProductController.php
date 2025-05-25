@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\DTO\Products\ProductDTO;
+use App\DTO\Products\ProductAuthorizationDTO;
 use App\Services\ProductService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -86,10 +87,11 @@ class ProductController extends Controller
      */
     public function destroy($id): JsonResponse
     {
+        $this->authorize('delete', new ProductAuthorizationDTO());
         $product = $this->productService->delete($id);
         if(!$product){
             return $this->errorResponse('Product not deleted');
         }
-        return $this->successResponse(null, 'Product deleted successfully',204);
+        return $this->successResponse(null, 'Product deleted successfully');
     }
 }

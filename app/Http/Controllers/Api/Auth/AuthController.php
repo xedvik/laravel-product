@@ -29,7 +29,7 @@ class AuthController extends Controller
         );
         $user = $this->userService->create($dto);
         if (!$user) {
-            return $this->errorResponse('User creation failed');
+            return $this->errorResponse('User creation failed',422);
         }
         return $this->successResponse($user, 'User created successfully',201);
     }
@@ -42,7 +42,7 @@ class AuthController extends Controller
         );
         $user = $this->userService->login($dto);
         if (!$user) {
-            return $this->errorResponse('Invalid credentials');
+            return $this->errorResponse('Invalid credentials', 401);
         }
         return $this->successResponse($user, 'Login successful');
     }

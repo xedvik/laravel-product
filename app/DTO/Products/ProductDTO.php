@@ -16,6 +16,7 @@ class ProductDTO
         $this->purchase_price = $purchase_price;
         $this->rent_price_per_hour = $rent_price_per_hour;
     }
+    //Получение массива данных без null
     public function toArray(): array
     {
         return array_filter(get_object_vars($this), fn($value) => !is_null($value));
