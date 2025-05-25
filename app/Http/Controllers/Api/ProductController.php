@@ -8,6 +8,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\DTO\Products\ProductDTO;
 use App\DTO\Products\ProductAuthorizationDTO;
+use App\Http\Resources\ProductsResource;
 use App\Services\ProductService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -24,10 +25,10 @@ class ProductController extends Controller
     public function index(): JsonResponse
     {
         $products = $this->productService->all();
-        if (!$products) {
-            return $this->errorResponse('Products not found', 404);
+        if ($products->isEmpty()) {
+            return $this->successResponse([], 'No products available');
         }
-        return $this->successResponse($products, 'Products fetched successfully');
+        return $this->successResponse(ProductsResource::collection($products), 'Products fetched successfully');
     }
 
 
@@ -47,7 +48,7 @@ class ProductController extends Controller
         if(!$product){
             return $this->errorResponse('Product not created', 400);
         }
-        return $this->successResponse($product, 'Product created successfully',201);
+        return $this->successResponse(new ProductsResource( $product), 'Product created successfully',201);
     }
 
     /**
@@ -59,7 +60,7 @@ class ProductController extends Controller
         if(!$product){
             return $this->errorResponse('Product not found', 404);
         }
-        return $this->successResponse($product, 'Product fetched successfully');
+        return $this->successResponse(new ProductsResource( $product), 'Product fetched successfully');
     }
 
 
@@ -79,7 +80,7 @@ class ProductController extends Controller
         if(!$product){
             return $this->errorResponse('Product not updated');
         }
-        return $this->successResponse($product, 'Product updated successfully');
+        return $this->successResponse(new ProductsResource( $product), 'Product updated successfully');
     }
 
     /**
