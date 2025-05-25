@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->integer('amount');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
         });
     }
 

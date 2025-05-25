@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Services\PurchaseService;
+use App\DTO\PurchaseDTO;
+use App\Http\Requests\PurchaseRequest;
+use App\Http\Resources\OwnershipResource;
+use App\Exceptions\InsufficientBalanceException;
+use App\Exceptions\ProductAlreadyOwnedException;
+use App\Exceptions\ProductNotFoundException;
+use App\Traits\ApiResponse;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\OwnershipType;
+use Illuminate\Support\Facades\Gate;
+
+class PurchaseController extends Controller
+{
+    use ApiResponse;
+
+    public function __construct(
+        private PurchaseService $purchaseService
+    ) {}
+
+    public function purchase(PurchaseRequest $request): JsonResponse
+    {
+        try {
+            $dto = new PurchaseDTO(
+                product_id: $request->validated('product_id'),
+                user_id: Auth::id(),
+                unique_code: $request->validated('unique_code'),
+                type: OwnershipType::PURCHASE
+            );
+
+            $ownership = $this->purchaseService->purchaseProduct($dto);
+
+            return $this->resourceResponse(
+                new OwnershipResource($ownership),
+                'Товар успешно куплен',
+                201
+            );
+
+        } catch (ProductNotFoundException $e) {
+            return $this->errorResponse($e->getMessage(), 404);
+
+        } catch (ProductAlreadyOwnedException $e) {
+            return $this->errorResponse($e->getMessage(), 409);
+
+        } catch (InsufficientBalanceException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+
+        } catch (\Exception $e) {
+            $message = 'Произошла ошибка при покупке товара';
+            $errors = null;
+            if (Gate::allows('view-detailed-errors')) {
+                $errors = [
+                    'exception' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => config('app.debug') ? $e->getTraceAsString() : null,
+                ];
+            }
+            return $this->errorResponse($message, 500, $errors);
+        }
+    }
+}

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\PurchaseController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,7 +19,7 @@ use App\Http\Controllers\Api\ProductController;
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::apiResource('/products', ProductController::class);
-
+    Route::post('/purchase', [PurchaseController::class, 'purchase']);
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);

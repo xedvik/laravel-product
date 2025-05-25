@@ -11,7 +11,8 @@ class StoreProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->can('create', new ProductAuthorizationDTO());
+        $user = $this->user();
+        return $user && $user->can('create', new ProductAuthorizationDTO());
     }
 
     /**

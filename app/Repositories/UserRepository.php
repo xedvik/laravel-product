@@ -20,12 +20,31 @@ class UserRepository implements UserRepositoryInterface
 
     public function findByEmail(string $email):?User
     {
-        $user = User::where('email', $email)->first();
-        return $user;
+
+        return User::where('email', $email)->first();
     }
 
     public function findById(int $id): ?User
     {
         return User::findOrFail($id);
+    }
+
+    public function checkBalance(User $user): int
+    {
+        return $user->balance;
+    }
+
+    public function updateBalance(User $user, int $amount): bool
+    {
+        return $user->update(['balance' => $amount]);
+    }
+
+    public function decreaseBalance(User $user, int $amount): bool
+    {
+        if ($user->balance < $amount) {
+            return false;
+        }
+
+        return $user->update(['balance' => $user->balance - $amount]);
     }
 }
