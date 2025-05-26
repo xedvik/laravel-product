@@ -29,4 +29,16 @@ class UpdateProductRequest extends FormRequest
             'rent_price_per_hour' => 'sometimes|numeric|min:0',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.string' => 'Имя должно быть строкой',
+            'description.string' => 'Описание должно быть строкой',
+            'purchase_price.numeric' => 'Цена покупки должна быть числом',
+            'purchase_price.min' => 'Цена покупки должна быть не менее 0',
+            'rent_price_per_hour.numeric' => 'Цена аренды за час должна быть числом',
+            'rent_price_per_hour.min' => 'Цена аренды за час должна быть не менее 0',
+        ];
+    }
 }

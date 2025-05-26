@@ -27,4 +27,20 @@ class RegisterRequest extends FormRequest
             'password' => 'required|string|min:8|confirmed',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Имя обязательно',
+            'name.string' => 'Имя должно быть строкой',
+            'name.max' => 'Имя не должно превышать 255 символов',
+            'email.required' => 'Email обязателен',
+            'email.email' => 'Email должен быть валидным',
+            'email.unique' => 'Email уже занят',
+            'password.required' => 'Пароль обязателен',
+            'password.string' => 'Пароль должен быть строкой',
+            'password.min' => 'Пароль должен быть не менее 8 символов',
+            'password.confirmed' => 'Пароли не совпадают',
+        ];
+    }
 }

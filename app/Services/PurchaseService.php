@@ -11,6 +11,7 @@ use App\Repositories\Interfaces\TransactionRepositoryInterface;
 use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\ProductAlreadyOwnedException;
 use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\UserNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -33,6 +34,9 @@ class PurchaseService
 
             if (!$product) {
                 throw new ProductNotFoundException('Товар не найден');
+            }
+            if (!$user) {
+                throw new UserNotFoundException('Пользователь не найден');
             }
 
             // Проверяем, не владеет ли пользователь уже этим товаром
@@ -63,14 +67,15 @@ class PurchaseService
             $this->transactionRepository->create(
                 user: $user,
                 product: $product,
-                type: 'purchase',
+                type: $dto->type->value,
                 amount: $product->purchase_price
             );
 
             Log::info('Товар успешно куплен', [
                 'user_id' => $user->id,
                 'product_id' => $product->id,
-                'amount' => $product->purchase_price
+                'amount' => $product->purchase_price,
+                'unique_code' => $dto->unique_code,
             ]);
 
             return $ownership;

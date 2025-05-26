@@ -26,4 +26,15 @@ class AuthRequest extends FormRequest
             'password' => 'required|string|min:6',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email обязателен',
+            'email.email' => 'Email должен быть валидным',
+            'password.required' => 'Пароль обязателен',
+            'password.string' => 'Пароль должен быть строкой',
+            'password.min' => 'Пароль должен быть не менее 6 символов',
+        ];
+    }
 }

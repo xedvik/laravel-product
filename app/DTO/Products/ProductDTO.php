@@ -2,6 +2,13 @@
 
 namespace App\DTO\Products;
 
+/**
+ * DTO для товара
+ * @param string $name - название товара
+ * @param string $description - описание товара
+ * @param int $purchase_price - цена покупки
+ * @param int $rent_price_per_hour - цена аренды за час
+ */
 class ProductDTO
 {
     public function __construct(

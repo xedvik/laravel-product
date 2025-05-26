@@ -10,6 +10,7 @@ use App\Http\Resources\OwnershipResource;
 use App\Exceptions\InsufficientBalanceException;
 use App\Exceptions\ProductAlreadyOwnedException;
 use App\Exceptions\ProductNotFoundException;
+use App\Exceptions\UserNotFoundException;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -42,13 +43,10 @@ class PurchaseController extends Controller
                 201
             );
 
-        } catch (ProductNotFoundException $e) {
+        } catch (ProductNotFoundException|UserNotFoundException $e) {
             return $this->errorResponse($e->getMessage(), 404);
 
-        } catch (ProductAlreadyOwnedException $e) {
-            return $this->errorResponse($e->getMessage(), 409);
-
-        } catch (InsufficientBalanceException $e) {
+        } catch (InsufficientBalanceException|ProductAlreadyOwnedException $e) {
             return $this->errorResponse($e->getMessage(), 400);
 
         } catch (\Exception $e) {

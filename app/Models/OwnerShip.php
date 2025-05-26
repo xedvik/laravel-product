@@ -18,6 +18,10 @@ class OwnerShip extends Model
         'amount_paid',
     ];
 
+    protected $casts = [
+        'rental_expires_at' => 'datetime',
+    ];
+
     public function user() {
         return $this->belongsTo(User::class);
     }

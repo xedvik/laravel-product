@@ -25,6 +25,8 @@ class OwnershipResource extends JsonResource
                 'id' => $this->product->id,
                 'name' => $this->product->name,
                 'description' => $this->product->description,
+                'purchase_price' => $this->product->purchase_price,
+                'rent_price_per_hour' => $this->product->rent_price_per_hour,
             ],
         ];
     }
