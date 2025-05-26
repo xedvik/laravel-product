@@ -7,7 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Services\UserService;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -18,21 +18,19 @@ class UserController extends Controller
     ) {
         $this->userService = $userService;
     }
-    public function getUserInfo(UserRequest $request): JsonResponse
+    public function getUserInfo(Request $request): JsonResponse
     {
-        $userInfo = $this->userService->getUserInfo($request->user());
-        return $this->successResponse(new UserResource($userInfo), 'Информация о пользователе получена успешно');
+        $user = $request->user()->load('ownerships');
+        return $this->successResponse(new UserResource($user), 'Информация о пользователе получена успешно');
     }
-    public function getUserBalance(UserRequest $request): JsonResponse
+    public function getUserBalance(Request $request): JsonResponse
     {
-        $this->checkAccess('getUserBalance', $request->user());
-        $user = $this->userService->getUserBalance($request->user());
-        return $this->successResponse(new UserResource($user, 'balance'), 'Баланс пользователя получен успешно');
+        return $this->successResponse(new UserResource($request->user(), 'balance'), 'Баланс пользователя получен успешно');
     }
     public function updateUserBalance(UserRequest $request): JsonResponse
     {
         $this->checkAccess('updateUserBalance', $request->user());
-        $user = $this->userService->updateUserBalance($request->user(), $request->amount);
-        return $this->successResponse(new UserResource($user, 'balance'), 'Баланс пользователя обновлен успешно');
+        $this->userService->updateUserBalance($request->user(), $request->amount);
+        return $this->successResponse(new UserResource($request->user(), 'balance'), 'Баланс пользователя обновлен успешно');
     }
 }

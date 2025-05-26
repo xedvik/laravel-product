@@ -17,7 +17,7 @@ class Product extends Model
     ];
 
     public function ownerships() {
-        return $this->hasMany(Ownership::class);
+        return $this->hasMany(OwnerShip::class);
     }
 
     public function transactions() {

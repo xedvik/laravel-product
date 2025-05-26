@@ -45,7 +45,7 @@ class User extends Authenticatable
     ];
 
     public function ownerships() {
-        return $this->hasMany(Ownership::class);
+        return $this->hasMany(OwnerShip::class);
     }
     public function transactions() {
         return $this->hasMany(Transaction::class);

@@ -13,7 +13,6 @@ use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\UserNotFoundException;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Auth;
 use App\Enums\OwnershipType;
 
 class PurchaseController extends Controller
@@ -29,7 +28,7 @@ class PurchaseController extends Controller
         try {
             $dto = new PurchaseDTO(
                 product_id: $request->validated('product_id'),
-                user_id: Auth::id(),
+                user_id: $request->user()->id,
                 unique_code: $request->validated('unique_code'),
                 type: OwnershipType::PURCHASE
             );

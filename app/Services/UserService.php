@@ -23,17 +23,6 @@ class UserService
         return $this->userRepository->findById($id);
     }
 
-    public function getUserInfo(User $user): User
-    {
-        $user->balance = $this->userRepository->checkBalance($user);
-        $user->ownerships = $this->ownershipRepository->getUserOwnerships($user->id);
-        return $user;
-    }
-    public function getUserBalance(User $user): User
-    {
-        $user->balance = $this->userRepository->checkBalance($user);
-        return $user;
-    }
     public function updateUserBalance(User $user, int $amount):User
     {
         $this->userRepository->updateBalance($user, $amount);

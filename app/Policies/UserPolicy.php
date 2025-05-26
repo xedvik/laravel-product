@@ -15,7 +15,7 @@ class UserPolicy
     }
     public function getUserBalance(User $user, User $model): bool
     {
-        return $user->id === $model->id && $user->role === 'admin';
+        return $user->id === $model->id;
     }
 
 

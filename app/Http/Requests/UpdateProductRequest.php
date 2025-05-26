@@ -12,7 +12,7 @@ class UpdateProductRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->can('create', new ProductAuthorizationDTO());
+        return $this->user() && $this->user()->can('update', new ProductAuthorizationDTO());
     }
 
     /**

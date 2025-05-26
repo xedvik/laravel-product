@@ -19,7 +19,9 @@ class UserResource extends JsonResource
                 'name' => $this->name,
                 'email' => $this->email,
                 'balance' => $this->balance,
-                'ownerships' => $this->ownerships,
+                'ownerships' => $this->whenLoaded('ownerships', function () {
+                    return new OwnershipCollection($this->ownerships);
+                }),
             ],
             'balance' => [
                 'balance' => $this->balance,

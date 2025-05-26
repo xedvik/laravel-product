@@ -33,7 +33,7 @@ class OwnershipRepository implements OwnershipRepositoryInterface
             'user_id' => $user->id,
             'product_id' => $product->id,
             'type' => $type->value,
-            'unique_code' => $uniqueCode ?? Str::uuid(),
+            'unique_code' => $uniqueCode,
             'amount_paid' => $amountPaid,
             'rental_expires_at' => $type === OwnershipType::RENT ? now()->addHours($hours) : null,
         ]);
@@ -98,5 +98,55 @@ class OwnershipRepository implements OwnershipRepositoryInterface
         ]);
 
         return $ownership->fresh();
+    }
+
+    /**
+     * Находит владение по уникальному коду
+     */
+    public function findByUniqueCode(string $uniqueCode): ?OwnerShip
+    {
+        return OwnerShip::where('unique_code', $uniqueCode)
+            ->with(['user', 'product'])
+            ->first();
+    }
+
+    /**
+     * Находит владение пользователя для конкретного товара
+     */
+    public function findUserOwnership(int $userId, int $productId): ?OwnerShip
+    {
+        return OwnerShip::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->with(['user', 'product'])
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
+
+    /**
+     * Генерирует уникальный код для владения, если его еще нет
+     */
+    public function generateUniqueCodeForOwnership(int $ownershipId): string
+    {
+        $ownership = $this->findById($ownershipId);
+
+        if (!$ownership->unique_code) {
+            $uniqueCode = $this->generateUniqueCode();
+            $ownership->update(['unique_code' => $uniqueCode]);
+            return $uniqueCode;
+        }
+
+        return $ownership->unique_code;
+    }
+
+    /**
+     * Генерирует уникальный код
+     */
+    private function generateUniqueCode(): string
+    {
+        do {
+            $code = strtoupper(Str::random(8));
+        } while (OwnerShip::where('unique_code', $code)->exists());
+
+        return $code;
     }
 }

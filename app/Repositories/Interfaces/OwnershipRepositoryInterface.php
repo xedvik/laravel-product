@@ -27,4 +27,11 @@ interface OwnershipRepositoryInterface
     public function findById(int $id): OwnerShip;
     // Метод для продления аренды
     public function extendRental(OwnerShip $ownership, int $additionalHours, int $additionalCost): OwnerShip;
+
+    // Метод для поиска владения по уникальному коду
+    public function findByUniqueCode(string $uniqueCode): ?OwnerShip;
+    // Метод для поиска владения по ID пользователя и ID товара
+    public function findUserOwnership(int $userId, int $productId): ?OwnerShip;
+    // Метод для генерации уникального кода для владения
+    public function generateUniqueCodeForOwnership(int $ownershipId): string;
 }

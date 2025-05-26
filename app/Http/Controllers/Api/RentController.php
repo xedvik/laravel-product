@@ -9,7 +9,6 @@ use App\Services\RentService;
 use App\DTO\Rent\RentDTO;
 use App\DTO\Rent\ExtendRentDTO;
 use App\Enums\OwnershipType;
-use Illuminate\Support\Facades\Auth;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\ProductAlreadyOwnedException;
 use App\Exceptions\InsufficientBalanceException;
@@ -34,7 +33,7 @@ class RentController extends Controller
         try {
             $dto = new RentDTO(
                 product_id: $request->validated('product_id'),
-                user_id: Auth::id(),
+                user_id: $request->user()->id,
                 unique_code: $request->validated('unique_code'),
                 type: OwnershipType::RENT,
                 hours: $request->validated('hours')

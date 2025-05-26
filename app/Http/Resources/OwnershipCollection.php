@@ -25,7 +25,7 @@ class OwnershipCollection extends ResourceCollection
             'meta' => [
                 'total' => $this->collection->count(),
                 'generated_at' => now()->toISOString(),
-                'user_id' => auth()->id(),
+                'user_id' => $request->user()?->id,
             ],
         ];
     }
