@@ -44,11 +44,6 @@ class RentService
                 throw new UserNotFoundException('Пользователь не найден');
             }
 
-            //  Проверка лимитов времени аренды
-            if ($dto->hours < 1 || $dto->hours > 24) {
-                throw new InvalidRentDurationException('Время аренды должно быть от 1 до 24 часов');
-            }
-
             //  Проверка доступности товара для аренды
             if ($this->ownershipRepository->isProductPurchased($dto->product_id)) {
                 throw new ProductNotAvailableException('Товар уже куплен и недоступен для аренды');
@@ -134,11 +129,6 @@ class RentService
 
             if (!$user) {
                 throw new UserNotFoundException('Пользователь не найден');
-            }
-
-
-            if ($dto->additional_hours < 1) {
-                throw new InvalidRentDurationException('Время продления должно быть минимум 1 час');
             }
 
             //  Рассчитываем общее время аренды после продления

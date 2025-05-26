@@ -14,7 +14,7 @@ class ExtendRentRequest extends FormRequest
     {
         return [
             'ownership_id' => 'required|exists:owner_ships,id',
-            'additional_hours' => 'required|integer|min:1',
+            'additional_hours' => 'required|integer|in:4,8,12,24',
         ];
     }
 
@@ -25,7 +25,7 @@ class ExtendRentRequest extends FormRequest
             'ownership_id.exists' => 'Аренда не найдена',
             'additional_hours.required' => 'Время продления обязательно',
             'additional_hours.integer' => 'Время продления должно быть целым числом',
-            'additional_hours.min' => 'Время продления должно быть не менее 1 часа',
+            'additional_hours.in' => 'Время продления должно быть 4, 8, 12 или 24 часа',
         ];
     }
 }
