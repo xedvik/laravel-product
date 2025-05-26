@@ -18,7 +18,7 @@ interface OwnershipRepositoryInterface
     public function getUserOwnerships(int $userId): array;
 
     // Методы для проверки доступности товара для аренды
-    public function hasActiveRental(int $productId, ?int $excludeUserId = null): bool;
+    public function hasActiveRental(int $productId): bool;
     // Метод для проверки, куплен ли товар
     public function isProductPurchased(int $productId): bool;
     // Метод для проверки, есть ли у пользователя активная аренда этого товара

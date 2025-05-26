@@ -10,7 +10,6 @@ use App\DTO\Rent\RentDTO;
 use App\DTO\Rent\ExtendRentDTO;
 use App\Enums\OwnershipType;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use App\Exceptions\ProductNotFoundException;
 use App\Exceptions\ProductAlreadyOwnedException;
 use App\Exceptions\InsufficientBalanceException;
@@ -58,7 +57,7 @@ class RentController extends Controller
         } catch (\Exception $e) {
             $message = 'Произошла ошибка при аренде товара';
             $errors = null;
-            if (Gate::allows('view-detailed-errors')) {
+            if ($this->checkAccess('view-detailed-errors', $request->user())) {
                 $errors = [
                     'exception' => $e->getMessage(),
                     'file' => $e->getFile(),
@@ -94,7 +93,7 @@ class RentController extends Controller
         } catch(\Exception $e) {
             $message = 'Произошла ошибка при продлении аренды';
             $errors = null;
-            if (Gate::allows('view-detailed-errors')) {
+            if ($this->checkAccess('view-detailed-errors', $request->user())) {
                 $errors = [
                     'exception' => $e->getMessage(),
                     'file' => $e->getFile(),

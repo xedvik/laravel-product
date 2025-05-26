@@ -15,7 +15,6 @@ use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\OwnershipType;
-use Illuminate\Support\Facades\Gate;
 
 class PurchaseController extends Controller
 {
@@ -52,7 +51,7 @@ class PurchaseController extends Controller
         } catch (\Exception $e) {
             $message = 'Произошла ошибка при покупке товара';
             $errors = null;
-            if (Gate::allows('view-detailed-errors')) {
+            if ($this->checkAccess('view-detailed-errors', $request->user())) {
                 $errors = [
                     'exception' => $e->getMessage(),
                     'file' => $e->getFile(),

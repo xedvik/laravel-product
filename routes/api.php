@@ -1,11 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\PurchaseController;
-use App\Http\Controllers\Api\RentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,10 +15,10 @@ use App\Http\Controllers\Api\RentController;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::apiResource('/products', ProductController::class);
-    Route::post('/purchase', [PurchaseController::class, 'purchase']);
-    Route::post('/rent', [RentController::class, 'rent']);
-    Route::post('/extend-rent', [RentController::class, 'extendRent']);
+    require_once __DIR__ . '/api/user.php';
+    require_once __DIR__ . '/api/products.php';
+    require_once __DIR__ . '/api/purchase.php';
+    require_once __DIR__ . '/api/rent.php';
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);

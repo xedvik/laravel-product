@@ -4,6 +4,8 @@ namespace App\Traits;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Gate;
+use App\Models\User;
 
 trait ApiResponse
 {
@@ -37,5 +39,12 @@ trait ApiResponse
             'message' => $message,
             'data' => $resource,
         ], $status);
+    }
+    protected function checkAccess(string $policy, User $user, string $message = 'У вас нет доступа к этой операции'): JsonResponse|bool
+    {
+        if (!Gate::allows($policy, $user)) {
+            return $this->errorResponse($message, 403);
+        }
+        return true;
     }
 }

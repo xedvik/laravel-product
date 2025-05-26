@@ -54,15 +54,12 @@ class OwnershipRepository implements OwnershipRepositoryInterface
     /**
      * Проверяет, есть ли активная аренда товара (исключая указанного пользователя)
      */
-    public function hasActiveRental(int $productId, ?int $excludeUserId = null): bool
+    public function hasActiveRental(int $productId): bool
     {
         $query = OwnerShip::where('product_id', $productId)
             ->where('type', OwnershipType::RENT->value)
             ->where('rental_expires_at', '>', now());
 
-        if ($excludeUserId) {
-            $query->where('user_id', '!=', $excludeUserId);
-        }
 
         return $query->exists();
     }

@@ -8,17 +8,17 @@ use App\Http\Requests\AuthRequest;
 use App\DTO\Auth\RegisterDTO;
 use App\DTO\Auth\LoginDTO;
 use App\Traits\ApiResponse;
-use App\Services\UserService;
+use App\Services\AuthService;
 use \Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 class AuthController extends Controller
 {
     use ApiResponse;
-    private $userService;
+    private $authService;
     public function __construct(
-        UserService $userService,
+        AuthService $authService,
     ) {
-        $this->userService = $userService;
+        $this->authService = $authService;
     }
     public function register(RegisterRequest $request): JsonResponse
     {
@@ -27,7 +27,7 @@ class AuthController extends Controller
             email: $request->email,
             password: $request->password,
         );
-        $user = $this->userService->create($dto);
+        $user = $this->authService->create($dto);
         if (!$user) {
             return $this->errorResponse('User creation failed',422);
         }
@@ -40,14 +40,14 @@ class AuthController extends Controller
             email: $request->email,
             password: $request->password,
         );
-        $user = $this->userService->login($dto);
+        $user = $this->authService->login($dto);
         if (!$user) {
             return $this->errorResponse('Invalid credentials', 401);
         }
         return $this->successResponse($user, 'Login successful');
     }
     public function logout(Request $request): JsonResponse{
-        $this->userService->logout($request->user());
+        $this->authService->logout($request->user());
         return $this->successResponse(null, 'Logout successful');
     }
 }

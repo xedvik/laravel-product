@@ -26,9 +26,9 @@ class ProductController extends Controller
     {
         $products = $this->productService->all();
         if ($products->isEmpty()) {
-            return $this->successResponse([], 'No products available');
+            return $this->successResponse([], 'Нет доступных товаров');
         }
-        return $this->successResponse(ProductsResource::collection($products), 'Products fetched successfully');
+        return $this->successResponse(ProductsResource::collection($products), 'Товары получены успешно');
     }
 
 
@@ -46,9 +46,9 @@ class ProductController extends Controller
         );
         $product = $this->productService->create($dto);
         if(!$product){
-            return $this->errorResponse('Product not created', 400);
+            return $this->errorResponse('Не удалось создать товар', 400);
         }
-        return $this->successResponse(new ProductsResource( $product), 'Product created successfully',201);
+        return $this->successResponse(new ProductsResource( $product), 'Товар создан успешно',201);
     }
 
     /**
@@ -58,9 +58,9 @@ class ProductController extends Controller
     {
         $product = $this->productService->findByid($id);
         if(!$product){
-            return $this->errorResponse('Product not found', 404);
+            return $this->errorResponse('Товар не найден', 404);
         }
-        return $this->successResponse(new ProductsResource( $product), 'Product fetched successfully');
+        return $this->successResponse(new ProductsResource( $product), 'Товар получен успешно');
     }
 
 
@@ -78,7 +78,7 @@ class ProductController extends Controller
         );
         $product = $this->productService->update($dto, $id);
         if(!$product){
-            return $this->errorResponse('Product not updated');
+            return $this->errorResponse('Не удалось обновить товар');
         }
         return $this->successResponse(new ProductsResource( $product), 'Product updated successfully');
     }
@@ -91,8 +91,8 @@ class ProductController extends Controller
         $this->authorize('delete', new ProductAuthorizationDTO());
         $product = $this->productService->delete($id);
         if(!$product){
-            return $this->errorResponse('Product not deleted');
+            return $this->errorResponse('Не удалось удалить товар');
         }
-        return $this->successResponse(null, 'Product deleted successfully');
+        return $this->successResponse(null, 'Товар удален успешно');
     }
 }
