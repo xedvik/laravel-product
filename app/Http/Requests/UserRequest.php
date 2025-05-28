@@ -2,6 +2,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UserRequest extends FormRequest
 {
@@ -21,5 +23,19 @@ class UserRequest extends FormRequest
             'amount.integer' => 'Сумма должна быть числом',
             'amount.min' => 'Сумма должна быть больше 0',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации данных',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

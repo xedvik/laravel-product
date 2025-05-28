@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AuthRequest extends FormRequest
 {
@@ -36,5 +38,19 @@ class AuthRequest extends FormRequest
             'password.string' => 'Пароль должен быть строкой',
             'password.min' => 'Пароль должен быть не менее 6 символов',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации данных',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

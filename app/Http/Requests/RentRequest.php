@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class RentRequest extends FormRequest
 {
@@ -32,5 +34,19 @@ class RentRequest extends FormRequest
             'unique_code.string' => 'Уникальный код должен быть строкой',
             'unique_code.max' => 'Уникальный код не должен превышать 255 символов',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации данных',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class ExtendRentRequest extends FormRequest
 {
@@ -27,5 +29,19 @@ class ExtendRentRequest extends FormRequest
             'additional_hours.integer' => 'Время продления должно быть целым числом',
             'additional_hours.in' => 'Время продления должно быть 4, 8, 12 или 24 часа',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации данных',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }

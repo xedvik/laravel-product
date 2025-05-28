@@ -3,7 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use App\DTO\Products\ProductAuthorizationDTO;
+
 class StoreProductRequest extends FormRequest
 {
     /**
@@ -43,5 +46,19 @@ class StoreProductRequest extends FormRequest
             'rent_price_per_hour.numeric' => 'Цена аренды за час должна быть числом',
             'rent_price_per_hour.min' => 'Цена аренды за час должна быть не менее 0',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt.
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(
+            response()->json([
+                'success' => false,
+                'message' => 'Ошибка валидации данных',
+                'errors' => $validator->errors(),
+            ], 422)
+        );
     }
 }
