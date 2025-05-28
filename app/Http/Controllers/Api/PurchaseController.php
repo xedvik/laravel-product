@@ -14,6 +14,7 @@ use App\Exceptions\UserNotFoundException;
 use App\Traits\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use App\Enums\OwnershipType;
+use OpenApi\Attributes as OA;
 
 class PurchaseController extends Controller
 {
@@ -23,6 +24,45 @@ class PurchaseController extends Controller
         private PurchaseService $purchaseService
     ) {}
 
+    #[OA\Post(
+        path: '/api/purchase',
+        operationId: 'purchaseProduct',
+        tags: ['Purchase'],
+        summary: 'Купить товар',
+        description: 'Позволяет пользователю купить товар. После покупки товар становится собственностью пользователя навсегда. Требуется авторизация.',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/PurchaseRequest')
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Товар успешно куплен',
+                content: new OA\JsonContent(ref: '#/components/schemas/OwnershipResponse')
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Ошибка валидации или бизнес-логики (недостаточно средств, товар уже куплен)',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Неавторизованный доступ',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Товар или пользователь не найден',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Внутренняя ошибка сервера',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            )
+        ]
+    )]
     public function purchase(PurchaseRequest $request): JsonResponse
     {
         try {

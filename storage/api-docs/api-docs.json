@@ -1,0 +1,1738 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Laravel Product API",
+        "description": "API для управления товарами, арендой и покупками в системе Laravel Product",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://localhost:8000",
+            "description": "Локальный сервер разработки"
+        }
+    ],
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Регистрация нового пользователя",
+                "description": "Создает нового пользователя в системе",
+                "operationId": "registerUser",
+                "requestBody": {
+                    "description": "Данные для регистрации пользователя",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Пользователь успешно зарегистрирован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации или создания пользователя",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Авторизация пользователя",
+                "description": "Выполняет вход пользователя в систему и возвращает токен доступа",
+                "operationId": "loginUser",
+                "requestBody": {
+                    "description": "Данные для входа в систему",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Успешная авторизация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неверные учетные данные",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Выход из системы",
+                "description": "Выполняет выход пользователя из системы и аннулирует токен",
+                "operationId": "logoutUser",
+                "responses": {
+                    "200": {
+                        "description": "Успешный выход из системы",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Получить список всех товаров",
+                "description": "Возвращает список всех доступных товаров в системе. Требуется авторизация.",
+                "operationId": "getProductsList",
+                "responses": {
+                    "200": {
+                        "description": "Список товаров получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Создать новый товар",
+                "description": "Создает новый товар в системе. Требуется роль администратора.",
+                "operationId": "storeProduct",
+                "requestBody": {
+                    "description": "Данные для создания товара",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreProductRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Товар создан успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Не удалось создать товар",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Недостаточно прав доступа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Получить товар по ID",
+                "description": "Возвращает данные конкретного товара по его идентификатору. Требуется авторизация.",
+                "operationId": "getProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Идентификатор товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Товар получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Обновить товар",
+                "description": "Обновляет данные существующего товара. Требуется роль администратора.",
+                "operationId": "updateProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Идентификатор товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Данные для обновления товара",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProductRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Товар обновлен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Не удалось обновить товар",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Недостаточно прав доступа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Удалить товар",
+                "description": "Удаляет товар из системы. Требуется роль администратора.",
+                "operationId": "deleteProduct",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Идентификатор товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Товар удален успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SuccessResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Не удалось удалить товар",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Недостаточно прав доступа",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/products/{productId}/status": {
+            "get": {
+                "tags": [
+                    "Product Status"
+                ],
+                "summary": "Проверить статус товара для пользователя",
+                "description": "Проверяет статус конкретного товара для текущего авторизованного пользователя. Возвращает информацию о владении товаром.",
+                "operationId": "checkUserProductStatus",
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "description": "Идентификатор товара",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Статус товара получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар не найден в ваших владениях",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/products/status/{uniqueCode}": {
+            "get": {
+                "tags": [
+                    "Product Status"
+                ],
+                "summary": "Проверить статус товара по уникальному коду",
+                "description": "Проверяет статус товара по его уникальному коду. Не требует авторизации.",
+                "operationId": "checkStatusByUniqueCode",
+                "parameters": [
+                    {
+                        "name": "uniqueCode",
+                        "in": "path",
+                        "description": "Уникальный код товара",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "PROD-001"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Статус товара получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProductStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар с указанным кодом не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/user/ownerships": {
+            "get": {
+                "tags": [
+                    "Product Status"
+                ],
+                "summary": "Получить все владения пользователя",
+                "description": "Возвращает список всех товаров, которыми владеет текущий пользователь (купленные и арендованные). Требуется авторизация.",
+                "operationId": "getUserOwnerships",
+                "responses": {
+                    "200": {
+                        "description": "Список владений получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserOwnershipsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/purchase": {
+            "post": {
+                "tags": [
+                    "Purchase"
+                ],
+                "summary": "Купить товар",
+                "description": "Позволяет пользователю купить товар. После покупки товар становится собственностью пользователя навсегда. Требуется авторизация.",
+                "operationId": "purchaseProduct",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PurchaseRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Товар успешно куплен",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OwnershipResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации или бизнес-логики (недостаточно средств, товар уже куплен)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар или пользователь не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/rent": {
+            "post": {
+                "tags": [
+                    "Rent"
+                ],
+                "summary": "Арендовать товар",
+                "description": "Позволяет пользователю арендовать товар на определенное количество часов. Требуется авторизация.",
+                "operationId": "rentProduct",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Товар успешно арендован",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OwnershipResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации или бизнес-логики",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Товар или пользователь не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/rent/extend": {
+            "post": {
+                "tags": [
+                    "Rent"
+                ],
+                "summary": "Продлить аренду товара",
+                "description": "Позволяет пользователю продлить существующую аренду товара на дополнительные часы. Требуется авторизация.",
+                "operationId": "extendRent",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ExtendRentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Аренда успешно продлена",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OwnershipResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Ошибка валидации или бизнес-логики (аренда истекла, недостаточно средств)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Аренда, товар или пользователь не найден",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Внутренняя ошибка сервера",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/user/info": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получить информацию о пользователе",
+                "description": "Возвращает полную информацию о текущем авторизованном пользователе, включая его владения товарами. Требуется авторизация.",
+                "operationId": "getUserInfo",
+                "responses": {
+                    "200": {
+                        "description": "Информация о пользователе получена успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserInfoResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/user/balance": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Получить баланс пользователя",
+                "description": "Возвращает текущий баланс авторизованного пользователя. Требуется авторизация.",
+                "operationId": "getUserBalance",
+                "responses": {
+                    "200": {
+                        "description": "Баланс пользователя получен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserBalanceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Обновить баланс пользователя",
+                "description": "Обновляет баланс пользователя. Требуется авторизация и специальные права доступа.",
+                "operationId": "updateUserBalance",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateBalanceRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Баланс пользователя обновлен успешно",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UserBalanceResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Неавторизованный доступ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Недостаточно прав для выполнения операции",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации данных",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "ErrorResponse": {
+                "title": "Ответ с ошибкой",
+                "description": "Стандартный ответ API при ошибке",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "description": "Сообщение об ошибке",
+                        "type": "string",
+                        "example": "Товар не найден"
+                    },
+                    "errors": {
+                        "description": "Детали ошибок (опционально)",
+                        "type": "object",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "ValidationErrorResponse": {
+                "title": "Ответ с ошибками валидации",
+                "description": "Ответ API при ошибках валидации",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "message": {
+                        "description": "Сообщение об ошибке",
+                        "type": "string",
+                        "example": "Ошибка валидации данных"
+                    },
+                    "errors": {
+                        "description": "Детали ошибок валидации",
+                        "properties": {
+                            "name": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "Имя обязательно"
+                                ]
+                            },
+                            "purchase_price": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": [
+                                    "Цена покупки должна быть числом"
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "SuccessResponse": {
+                "title": "Успешный ответ",
+                "description": "Стандартный успешный ответ API",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Операция выполнена успешно"
+                    },
+                    "data": {
+                        "description": "Данные ответа (если необходимо)",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterRequest": {
+                "title": "Запрос регистрации",
+                "description": "Данные для регистрации нового пользователя",
+                "required": [
+                    "name",
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "name": {
+                        "description": "Имя пользователя",
+                        "type": "string",
+                        "example": "Иван Иванов"
+                    },
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "password": {
+                        "description": "Пароль пользователя",
+                        "type": "string",
+                        "format": "password",
+                        "minLength": 8,
+                        "example": "password123"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "title": "Запрос авторизации",
+                "description": "Данные для входа в систему",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "password": {
+                        "description": "Пароль пользователя",
+                        "type": "string",
+                        "format": "password",
+                        "example": "password123"
+                    }
+                },
+                "type": "object"
+            },
+            "User": {
+                "title": "Пользователь",
+                "description": "Модель пользователя",
+                "properties": {
+                    "id": {
+                        "description": "Уникальный идентификатор пользователя",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Имя пользователя",
+                        "type": "string",
+                        "example": "Иван Иванов"
+                    },
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "created_at": {
+                        "description": "Дата создания",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    },
+                    "updated_at": {
+                        "description": "Дата обновления",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "AuthResponse": {
+                "title": "Ответ аутентификации",
+                "description": "Ответ при успешной аутентификации с токеном и данными пользователя",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Login successful"
+                    },
+                    "data": {
+                        "properties": {
+                            "user": {
+                                "$ref": "#/components/schemas/User"
+                            },
+                            "token": {
+                                "description": "Токен доступа",
+                                "type": "string",
+                                "example": "1|abcdef123456789..."
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "Product": {
+                "title": "Товар",
+                "description": "Модель товара",
+                "required": [
+                    "id",
+                    "name",
+                    "purchase_price",
+                    "rent_price_per_hour",
+                    "created_at"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "Уникальный идентификатор товара",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Название товара",
+                        "type": "string",
+                        "example": "Игровая консоль PlayStation 5"
+                    },
+                    "description": {
+                        "description": "Описание товара",
+                        "type": "string",
+                        "example": "Новейшая игровая консоль от Sony с 4K поддержкой",
+                        "nullable": true
+                    },
+                    "purchase_price": {
+                        "description": "Цена покупки товара",
+                        "type": "integer",
+                        "example": 50000
+                    },
+                    "rent_price_per_hour": {
+                        "description": "Цена аренды товара за час",
+                        "type": "integer",
+                        "example": 500
+                    },
+                    "created_at": {
+                        "description": "Дата создания",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T10:30:00.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ProductRequest": {
+                "title": "Запрос для создания/обновления товара",
+                "description": "Данные для создания или обновления товара",
+                "properties": {
+                    "name": {
+                        "description": "Название товара",
+                        "type": "string",
+                        "example": "Игровая консоль PlayStation 5"
+                    },
+                    "description": {
+                        "description": "Описание товара",
+                        "type": "string",
+                        "example": "Новейшая игровая консоль от Sony с 4K поддержкой",
+                        "nullable": true
+                    },
+                    "purchase_price": {
+                        "description": "Цена покупки товара",
+                        "type": "number",
+                        "format": "integer",
+                        "minimum": 0,
+                        "example": 50000
+                    },
+                    "rent_price_per_hour": {
+                        "description": "Цена аренды товара за час",
+                        "type": "number",
+                        "format": "integer",
+                        "minimum": 0,
+                        "example": 500
+                    }
+                },
+                "type": "object"
+            },
+            "StoreProductRequest": {
+                "required": [
+                    "name",
+                    "purchase_price",
+                    "rent_price_per_hour"
+                ],
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProductRequest"
+                    }
+                ]
+            },
+            "UpdateProductRequest": {
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/ProductRequest"
+                    }
+                ]
+            },
+            "ProductResponse": {
+                "title": "Ответ с товаром",
+                "description": "Стандартный ответ API с данными товара",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Товар получен успешно"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/Product"
+                    }
+                },
+                "type": "object"
+            },
+            "ProductListResponse": {
+                "title": "Ответ со списком товаров",
+                "description": "Стандартный ответ API со списком товаров",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Товары получены успешно"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Product"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ProductStatus": {
+                "title": "Статус товара",
+                "properties": {
+                    "id": {
+                        "description": "Идентификатор владения",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "description": "Идентификатор товара",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_name": {
+                        "description": "Название товара",
+                        "type": "string",
+                        "example": "Ноутбук Dell XPS 13"
+                    },
+                    "unique_code": {
+                        "description": "Уникальный код товара",
+                        "type": "string",
+                        "example": "PROD-001"
+                    },
+                    "type": {
+                        "description": "Тип владения",
+                        "type": "string",
+                        "enum": [
+                            "rent",
+                            "purchase"
+                        ],
+                        "example": "rent"
+                    },
+                    "status": {
+                        "description": "Статус владения",
+                        "type": "string",
+                        "enum": [
+                            "active",
+                            "expired"
+                        ],
+                        "example": "active"
+                    },
+                    "expires_at": {
+                        "description": "Дата окончания аренды (только для аренды)",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T12:00:00Z",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "description": "Дата создания",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "ProductStatusResponse": {
+                "title": "Ответ со статусом товара",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Статус товара получен успешно"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/ProductStatus"
+                    }
+                },
+                "type": "object"
+            },
+            "UserOwnershipsResponse": {
+                "title": "Ответ со списком владений пользователя",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Список ваших товаров получен успешно"
+                    },
+                    "data": {
+                        "description": "Список владений пользователя",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/ProductStatus"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PurchaseRequest": {
+                "title": "Запрос на покупку товара",
+                "required": [
+                    "product_id",
+                    "unique_code"
+                ],
+                "properties": {
+                    "product_id": {
+                        "description": "Идентификатор товара для покупки",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "unique_code": {
+                        "description": "Уникальный код товара",
+                        "type": "string",
+                        "example": "PROD-001"
+                    }
+                },
+                "type": "object"
+            },
+            "RentRequest": {
+                "title": "Запрос на аренду товара",
+                "required": [
+                    "product_id",
+                    "unique_code",
+                    "hours"
+                ],
+                "properties": {
+                    "product_id": {
+                        "description": "Идентификатор товара для аренды",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "unique_code": {
+                        "description": "Уникальный код товара",
+                        "type": "string",
+                        "example": "PROD-001"
+                    },
+                    "hours": {
+                        "description": "Количество часов аренды",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 24
+                    }
+                },
+                "type": "object"
+            },
+            "ExtendRentRequest": {
+                "title": "Запрос на продление аренды",
+                "required": [
+                    "ownership_id",
+                    "additional_hours"
+                ],
+                "properties": {
+                    "ownership_id": {
+                        "description": "Идентификатор аренды",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "additional_hours": {
+                        "description": "Дополнительные часы аренды",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 12
+                    }
+                },
+                "type": "object"
+            },
+            "Ownership": {
+                "title": "Владение товаром",
+                "properties": {
+                    "id": {
+                        "description": "Идентификатор владения",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "product_id": {
+                        "description": "Идентификатор товара",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "description": "Идентификатор пользователя",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "unique_code": {
+                        "description": "Уникальный код товара",
+                        "type": "string",
+                        "example": "PROD-001"
+                    },
+                    "type": {
+                        "description": "Тип владения",
+                        "type": "string",
+                        "enum": [
+                            "rent",
+                            "purchase"
+                        ],
+                        "example": "rent"
+                    },
+                    "expires_at": {
+                        "description": "Дата окончания аренды (только для аренды)",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-15T12:00:00Z"
+                    },
+                    "created_at": {
+                        "description": "Дата создания",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "updated_at": {
+                        "description": "Дата последнего обновления",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "OwnershipResponse": {
+                "title": "Ответ с данными владения",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Товар успешно арендован"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/Ownership"
+                    }
+                },
+                "type": "object"
+            },
+            "UserWithBalance": {
+                "title": "Пользователь с балансом",
+                "properties": {
+                    "id": {
+                        "description": "Идентификатор пользователя",
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "name": {
+                        "description": "Имя пользователя",
+                        "type": "string",
+                        "example": "Иван Иванов"
+                    },
+                    "email": {
+                        "description": "Email пользователя",
+                        "type": "string",
+                        "format": "email",
+                        "example": "ivan@example.com"
+                    },
+                    "balance": {
+                        "description": "Баланс пользователя",
+                        "type": "number",
+                        "format": "integer",
+                        "example": 1500.5
+                    },
+                    "created_at": {
+                        "description": "Дата регистрации",
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T12:00:00Z"
+                    },
+                    "ownerships": {
+                        "description": "Владения пользователя",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Ownership"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateBalanceRequest": {
+                "title": "Запрос на обновление баланса",
+                "required": [
+                    "amount"
+                ],
+                "properties": {
+                    "amount": {
+                        "description": "Сумма для изменения баланса (может быть отрицательной)",
+                        "type": "number",
+                        "format": "integer",
+                        "example": 100
+                    }
+                },
+                "type": "object"
+            },
+            "UserInfoResponse": {
+                "title": "Ответ с информацией о пользователе",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Информация о пользователе получена успешно"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/UserWithBalance"
+                    }
+                },
+                "type": "object"
+            },
+            "UserBalanceResponse": {
+                "title": "Ответ с балансом пользователя",
+                "properties": {
+                    "success": {
+                        "description": "Статус успешности операции",
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "message": {
+                        "description": "Сообщение о результате операции",
+                        "type": "string",
+                        "example": "Баланс пользователя получен успешно"
+                    },
+                    "data": {
+                        "description": "Данные баланса пользователя",
+                        "properties": {
+                            "id": {
+                                "description": "Идентификатор пользователя",
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "balance": {
+                                "description": "Баланс пользователя",
+                                "type": "number",
+                                "format": "integer",
+                                "example": 1500
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Аутентификация через Laravel Sanctum токены",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Authentication",
+            "description": "API для аутентификации пользователей"
+        },
+        {
+            "name": "Products",
+            "description": "API для управления товарами"
+        },
+        {
+            "name": "Rent",
+            "description": "API для управления арендой товаров"
+        },
+        {
+            "name": "Purchase",
+            "description": "API для покупки товаров"
+        },
+        {
+            "name": "Product Status",
+            "description": "API для проверки статуса товаров"
+        },
+        {
+            "name": "User",
+            "description": "API для управления пользователями"
+        }
+    ]
+}

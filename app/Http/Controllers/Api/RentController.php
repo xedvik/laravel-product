@@ -19,6 +19,7 @@ use App\Exceptions\UserNotFoundException;
 use App\Exceptions\RentExpiredException;
 use App\Traits\ApiResponse;
 use App\Http\Resources\OwnershipResource;
+use OpenApi\Attributes as OA;
 
 class RentController extends Controller
 {
@@ -28,6 +29,45 @@ class RentController extends Controller
         private RentService $rentService
     ) {}
 
+    #[OA\Post(
+        path: '/api/rent',
+        operationId: 'rentProduct',
+        tags: ['Rent'],
+        summary: 'Арендовать товар',
+        description: 'Позволяет пользователю арендовать товар на определенное количество часов. Требуется авторизация.',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/RentRequest')
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Товар успешно арендован',
+                content: new OA\JsonContent(ref: '#/components/schemas/OwnershipResponse')
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Ошибка валидации или бизнес-логики',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Неавторизованный доступ',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Товар или пользователь не найден',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Внутренняя ошибка сервера',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            )
+        ]
+    )]
     public function rent(RentRequest $request)
     {
         try {
@@ -68,6 +108,45 @@ class RentController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: '/api/rent/extend',
+        operationId: 'extendRent',
+        tags: ['Rent'],
+        summary: 'Продлить аренду товара',
+        description: 'Позволяет пользователю продлить существующую аренду товара на дополнительные часы. Требуется авторизация.',
+        security: [['sanctum' => []]],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/ExtendRentRequest')
+        ),
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Аренда успешно продлена',
+                content: new OA\JsonContent(ref: '#/components/schemas/OwnershipResponse')
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Ошибка валидации или бизнес-логики (аренда истекла, недостаточно средств)',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Неавторизованный доступ',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Аренда, товар или пользователь не найден',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Внутренняя ошибка сервера',
+                content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')
+            )
+        ]
+    )]
     public function extendRent(ExtendRentRequest $request)
     {
         try {
