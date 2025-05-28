@@ -19,6 +19,7 @@ use App\Exceptions\OwnershipNotFoundException;
 use App\Exceptions\RentExpiredException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\EndRentalJob;
 
 class RentService
 {
@@ -88,6 +89,11 @@ class RentService
                 amount: $totalCost
             );
 
+            //  Планируем автоматическое завершение аренды
+            EndRentalJob::dispatch($ownership->id, $ownership->rental_expires_at)
+                ->delay($ownership->rental_expires_at)
+                ->onQueue('rental-management');
+
             //  Логирование
             Log::info('Товар успешно арендован', [
                 'user_id' => $user->id,
@@ -95,7 +101,8 @@ class RentService
                 'amount' => $totalCost,
                 'hours' => $dto->hours,
                 'expires_at' => $ownership->rental_expires_at,
-                'unique_code' => $ownership->unique_code
+                'unique_code' => $ownership->unique_code,
+                'end_rental_job_scheduled' => true
             ]);
 
             return $ownership;
@@ -168,7 +175,11 @@ class RentService
                 amount: $additionalCost
             );
 
-            //  Логирование
+            //  Планируем новый джоб завершения аренды с обновленным временем
+            EndRentalJob::dispatch($extendedOwnership->id, $extendedOwnership->rental_expires_at)
+                ->delay($extendedOwnership->rental_expires_at)
+                ->onQueue('rental-management');
+
             Log::info('Аренда успешно продлена', [
                 'ownership_id' => $ownership->id,
                 'user_id' => $user->id,
@@ -178,6 +189,7 @@ class RentService
                 'new_expires_at' => $extendedOwnership->rental_expires_at,
                 'total_hours' => $newTotalHours,
                 'total_paid' => $extendedOwnership->amount_paid,
+                'new_end_rental_job_scheduled' => true
             ]);
 
             return $extendedOwnership;

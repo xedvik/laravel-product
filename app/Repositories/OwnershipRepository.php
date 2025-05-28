@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Repositories\Interfaces\OwnershipRepositoryInterface;
 use App\DTO\PurchaseDTO;
 use App\Enums\OwnershipType;
+use App\Enums\OwnershipStatus;
 use Illuminate\Support\Str;
 
 class OwnershipRepository implements OwnershipRepositoryInterface
@@ -29,13 +30,22 @@ class OwnershipRepository implements OwnershipRepositoryInterface
      */
     public function createOwnership(User $user, Product $product, OwnershipType $type, int $amountPaid, ?string $uniqueCode = null, ?int $hours = null): OwnerShip
     {
+        $rentalExpiresAt = $type === OwnershipType::RENT ? now()->addHours($hours) : null;
+
+        // Определяем статус при создании
+        $status = match($type) {
+            OwnershipType::PURCHASE => OwnershipStatus::PURCHASED,
+            OwnershipType::RENT => OwnershipStatus::RENTED_ACTIVE,
+        };
+
         return OwnerShip::create([
             'user_id' => $user->id,
             'product_id' => $product->id,
             'type' => $type->value,
+            'status' => $status,
             'unique_code' => $uniqueCode,
             'amount_paid' => $amountPaid,
-            'rental_expires_at' => $type === OwnershipType::RENT ? now()->addHours($hours) : null,
+            'rental_expires_at' => $rentalExpiresAt,
         ]);
     }
 
@@ -95,6 +105,7 @@ class OwnershipRepository implements OwnershipRepositoryInterface
         $ownership->update([
             'rental_expires_at' => $ownership->rental_expires_at->addHours($additionalHours),
             'amount_paid' => $ownership->amount_paid + $additionalCost,
+            'status' => OwnershipStatus::RENTED_ACTIVE,
         ]);
 
         return $ownership->fresh();

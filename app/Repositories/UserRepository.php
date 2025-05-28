@@ -36,7 +36,7 @@ class UserRepository implements UserRepositoryInterface
 
     public function updateBalance(User $user, int $amount): bool
     {
-        return $user->update(['balance' => $amount]);
+        return $user->update(['balance' => $user->balance + $amount]);
     }
 
     public function decreaseBalance(User $user, int $amount): bool

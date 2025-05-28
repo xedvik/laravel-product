@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Enums\OwnershipStatus;
 
 class OwnerShip extends Model
 {
@@ -13,6 +14,7 @@ class OwnerShip extends Model
         'user_id',
         'product_id',
         'type',
+        'status',
         'unique_code',
         'rental_expires_at',
         'amount_paid',
@@ -20,6 +22,7 @@ class OwnerShip extends Model
 
     protected $casts = [
         'rental_expires_at' => 'datetime',
+        'status' => OwnershipStatus::class,
     ];
 
     public function user() {

@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     curl \
+    netcat-traditional \
     libzip-dev \
     libpq-dev \
     libonig-dev \
@@ -48,6 +49,7 @@ RUN mkdir -p /var/www/html/storage/logs \
     /var/www/html/storage/framework/views \
     /var/www/html/storage/framework/cache \
     /var/www/html/bootstrap/cache
+
 
 # Копируем и настраиваем entrypoint скрипт
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh

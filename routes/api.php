@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\TestQueueController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -22,4 +23,3 @@ Route::middleware('auth:sanctum')->group(function () {
         require $routeFile;
     }
 });
-

@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => env('QUEUE_CONNECTION', 'sync'),
+    'default' => env('QUEUE_CONNECTION', 'rabbitmq'),
 
     /*
     |--------------------------------------------------------------------------
@@ -74,17 +74,29 @@ return [
             'driver' => 'rabbitmq',
             'host' => env('RABBITMQ_HOST', '127.0.0.1'),
             'port' => env('RABBITMQ_PORT', 5672),
-            'vhost' => env('RABBITMQ_HOST', '/'),
+            'vhost' => env('RABBITMQ_VHOST', '/'),
             'login' => env('RABBITMQ_USER', 'guest'),
             'password' => env('RABBITMQ_PASSWORD', 'guest'),
             'queue' => env('RABBITMQ_QUEUE', 'default'),
 
             'options' => [
                 'exchange' => [
-                    'name' => env('RABBITMQ_EXCHANGE_NAME', null),
-                    'type' => env('RABBITMQ_EXCHANGE_TYPE', 'direct'),
+                    'name' => env('RABBITMQ_EXCHANGE_NAME', 'laravel_exchange'),
+                    'type' => env('RABBITMQ_EXCHANGE_TYPE', 'x-delayed-message'),
                     'durable' => true,
                     'auto_delete' => false,
+                    'declare' => true,
+                    'arguments' => [
+                        'x-delayed-type' => ['S', 'direct'],
+                    ],
+                ],
+                'worker' => env('RABBITMQ_WORKER', 'default'),
+                'queue' => [
+                    'job_body_key' => 'data',
+                    'durable' => true,
+                    'auto_delete' => false,
+                    'declare' => true,
+                    'bind' => true,
                 ],
             ],
         ],

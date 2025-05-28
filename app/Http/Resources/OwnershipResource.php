@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+
 class OwnershipResource extends JsonResource
 {
     /**
@@ -21,6 +22,11 @@ class OwnershipResource extends JsonResource
             'amount_paid' => $this->amount_paid,
             'rental_expires_at' => $this->rental_expires_at,
             'purchased_at' => $this->created_at,
+            'status' => [
+                'value' => $this->status->value,
+                'label' => $this->status->getLabel(),
+                'description' => $this->status->getDescription(),
+            ],
             'product' => [
                 'id' => $this->product->id,
                 'name' => $this->product->name,

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('type');
+            $table->string('status')->default('unknown');
             $table->string('unique_code')->nullable()->unique();
             $table->timestamp('rental_expires_at')->nullable();
             $table->integer('amount_paid');
